@@ -31,7 +31,7 @@ public class MyArrayList {
         return size;
     }
 
-    // TODO: Runtime: O(N)
+    // TODO: Runtime: O(1)
     public Cow get(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
@@ -57,7 +57,7 @@ public class MyArrayList {
         return rem;
     }
 
-    // TODO: Runtime: O(?)
+    // TODO: Runtime: O(N)
     public void add(int index, Cow c) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();

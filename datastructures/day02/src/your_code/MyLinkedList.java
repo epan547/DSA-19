@@ -19,13 +19,15 @@ public class MyLinkedList {
 
         private Node(Chicken d) {
             this.val = d;
-            prev = null;
-            next = null;
+            this.prev = null;
+            this.next = null;
         }
     }
 
     public MyLinkedList() {
-        // TODO
+        Node head;
+        Node tail;
+        size = 0;
     }
 
     public int size() {
@@ -45,30 +47,116 @@ public class MyLinkedList {
     }
 
     public void addLast(Chicken c) {
-        // TODO
+        if (size == 0) {
+            Node n = new Node(c);
+            this.head = n;
+            this.tail = n;
+            size ++;
+        }
+        else {
+            Node n = new Node(c, this.tail, null);
+            this.tail.next = n;
+            this.tail = n;
+            size ++;
+        }
     }
 
     public void addFirst(Chicken c) {
-        // TODO
+        if (size == 0) {
+            Node n = new Node(c);
+            this.head = n;
+            this.tail = n;
+            size ++;
+        }
+        else {
+            Node temp = new Node(c, null, this.head);
+            this.head.prev = temp;
+            this.head = temp;
+            size ++;
+        }
+
     }
 
     public Chicken get(int index) {
-        // TODO
-        return null;
+        if (index >= size || index < 0){
+            throw new IndexOutOfBoundsException();
+        }
+        else {
+            Node n = this.head;
+            for (int i = 0; i < index; i++) {
+                n = n.next;
+            }
+            return n.val;
+        }
+
     }
 
     public Chicken remove(int index) {
-        // TODO
-        return null;
+        System.out.println(size);
+        if (index >= size || index < 0){
+            throw new IndexOutOfBoundsException();
+        }
+        if (index == 0) {
+            Chicken c = this.removeFirst();
+            return c;
+        }
+
+        else if (index == size-1){
+            Chicken c = this.removeLast();
+            return c;
+        }
+        else{
+            Node curr = this.head;
+            for (int i = 0; i < index; i++) {
+                curr = curr.next;
+            }
+            Chicken c = curr.val;
+            Node after = curr.next;
+            Node before = curr.prev;
+            before.next = after;
+            after.prev = before;
+            size --;
+            return c;
+        }
     }
 
     public Chicken removeFirst() {
-        // TODO
-        return null;
+        if (size == 0) {
+            return null;
+        }
+        else if (size == 1){
+            Chicken c = this.head.val;
+            this.head = null;
+            this.tail = null;
+            size --;
+            return c;
+        }
+        else {
+            Chicken c = this.head.val;
+            this.head = this.head.next;
+            this.head.prev = null;
+            size --;
+            return c;
+        }
     }
 
     public Chicken removeLast() {
-        // TODO
-        return null;
+        if (size == 0) {
+            return null;
+        }
+        else if (size == 1){
+            Chicken c = this.tail.val;
+            this.head = null;
+            this.tail = null;
+            size --;
+            return c;
+        }
+        else {
+            Chicken c = this.tail.val;
+            this.tail = this.tail.prev;
+            this.tail.next = null;
+            size --;
+            return c;
+        }
     }
 }
