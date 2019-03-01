@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class MergeSort extends SortAlgorithm {
 
@@ -17,9 +18,26 @@ public class MergeSort extends SortAlgorithm {
      */
     @Override
     public int[] sort(int[] array) {
-        // TODO
-        return new int[0];
+        // base case
+        if(array.length == 1){
+            return array;
+        }
+
+        if(array.length == 0 || array.length == 1){
+            return array;
+        }
+        int i = array.length / 2;
+        int[] a = Arrays.copyOfRange(array, 0, i);
+        int[] b = Arrays.copyOfRange(array, i, array.length);
+
+//      Sorted arrays
+        int[] left = sort(a);
+        int[] right = sort(b);
+
+
+        return merge(left, right);
     }
+
 
     /**
      * Given two sorted arrays a and b, return a new sorted array containing
@@ -27,7 +45,36 @@ public class MergeSort extends SortAlgorithm {
      */
     public int[] merge(int[] a, int[] b) {
         // TODO
-        return new int[0];
+        int[] c = new int[a.length + b.length];
+        int i = 0;
+        int j = 0;
+
+        for(int x = 0; x < a.length + b.length; x++){
+            if(i==a.length){
+                int[] add = Arrays.copyOfRange(b, j, b.length);
+                for(int y=0; y<add.length; y++){
+                    c[x+y] = add[y];
+                }
+                return c;
+            }
+            if(j==b.length){
+                int len = a.length;
+                int[] add = Arrays.copyOfRange(a, i, len);
+                for(int y=0; y<add.length; y++){
+                    c[x+y] = add[y];
+                }
+                return c;
+            }
+            if(a[i] < b[j]){
+                c[x] = a[i];
+                i++;
+            }
+            else{
+                c[x] = b[j];
+                j++;
+            }
+        }
+        return c;
     }
 
 }

@@ -1,4 +1,7 @@
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
+
+
 
 public class QuickSort extends SortAlgorithm {
 
@@ -12,16 +15,22 @@ public class QuickSort extends SortAlgorithm {
 
     /**
      * TODO
-     * Best-case runtime:
-     * Worst-case runtime:
-     * Average-case runtime:
+     * Best-case runtime: n logn
+     * Worst-case runtime: n^2
+     * Average-case runtime: n logn
      *
      * Space-complexity:
      */
     @Override
     public int[] sort(int[] array) {
         // TODO: Sort the array. Make sure you avoid the O(N^2) runtime worst-case
+
+//        Shuffling the array
+        shuffleArray(array);
+//        Calling quicksort
+        quickSort(array,0, array.length-1);
         return array;
+
     }
 
     /**
@@ -33,9 +42,21 @@ public class QuickSort extends SortAlgorithm {
      * @param hi The ending index of the subarray being considered (inclusive)
      */
     public void quickSort(int[] a, int lo, int hi) {
+        if(a.length <= 1){
+            return;
+        }
+
         if (lo < hi) {
             int p = partition(a, lo, hi);
-            // TODO
+            if(p-1-lo > 0){
+                quickSort(a, lo, p-1);
+            }
+            if(hi-(p) > 0) {
+                quickSort(a, p + 1, hi);
+            }
+        }
+        else{
+            return;
         }
     }
 
@@ -50,7 +71,36 @@ public class QuickSort extends SortAlgorithm {
      */
     public int partition(int[] array, int lo, int hi) {
         // TODO
-        return 0;
+        int pivot = lo;
+        int last = hi;
+        int curr = lo + 1;
+        for(int i = lo+1; i <= hi; i++){
+            if(array[curr] < array[pivot]){
+                int temp = array[curr];
+                array[curr] = array[pivot];
+                array[curr-1] = temp;
+                pivot = curr;
+                curr++;
+            }
+            else{
+//              Switch current element with last unknown element
+                int temp = array[last];
+                array[last] = array[curr];
+                array[curr] = temp;
+//              Decrement last unknown element
+                last --;
+                if(last < curr){
+                    return pivot;
+                }
+            }
+        }
+
+//      For debugging
+//        for(int j = lo; j<= hi; j++){
+//            System.out.print(array[j] + ",");
+//        }
+//        System.out.println("done " + pivot);
+        return pivot;
     }
 
 }

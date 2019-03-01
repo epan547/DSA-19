@@ -1,3 +1,7 @@
+import java.util.Arrays;
+
+import static java.lang.System.arraycopy;
+
 public class HeapSort extends SortAlgorithm {
     int size;
     int[] heap;
@@ -19,6 +23,39 @@ public class HeapSort extends SortAlgorithm {
     // Use either recursion or a loop to then sink the child
     public void sink(int i) {
         // TODO
+
+        if(rightChild(i) <= this.size-1){
+            if(heap[leftChild(i)] > heap[i] || heap[rightChild(i)] > heap[i]){
+                if(heap[leftChild(i)] > heap[rightChild(i)]){
+                    int temp = heap[leftChild(i)];
+                    heap[leftChild(i)] = heap[i];
+                    heap[i] = temp;
+                    sink(leftChild(i));
+                }
+                else {
+                    int temp = heap[rightChild(i)];
+                    heap[rightChild(i)] = heap[i];
+                    heap[i] = temp;
+                    sink(rightChild(i));
+                }
+            }
+            else{
+                return;
+            }
+        }
+        else if (leftChild(i) <= this.size-1){
+            if(heap[leftChild(i)] > heap[i]){
+                int temp = heap[leftChild(i)];
+                heap[leftChild(i)] = heap[i];
+                heap[i] = temp;
+                sink(leftChild(i));
+            }
+            else{
+                return;
+            }
+        }
+        return;
+
     }
 
     // Given the array, build a heap by correcting every non-leaf's position, starting from the bottom, then
@@ -27,15 +64,21 @@ public class HeapSort extends SortAlgorithm {
         this.heap = array;
         this.size = array.length;
 
-        for (int i=this.size / 2 - 1; i>=0; i--) {
+        for (int i= (this.size / 2) -1; i>=0; i--) {
             // TODO
+            this.sink(i);
+
         }
+//        for (int j = 0; j < this.size; j++){
+//            System.out.print(array[j] + ",");
+//        }
+//        System.out.println(" ");
     }
 
     /**
-     * Best-case runtime:
-     * Worst-case runtime:
-     * Average-case runtime:
+     * Best-case runtime: n logn
+     * Worst-case runtime: n logn
+     * Average-case runtime: n logn
      *
      * Space-complexity:
      */
@@ -45,6 +88,14 @@ public class HeapSort extends SortAlgorithm {
 
         for (int i=size-1; i>0; i--) {
             // TODO
+            int temp = array[i];
+            array[i] = array[0];
+            array[0] = temp;
+
+//            array = Arrays.copyOf(array, array.length-1);
+            size --;
+            sink(0);
+
         }
 
         return heap;

@@ -21,7 +21,7 @@ public class SortTest {
         emptyCase = generateRandomArrayOfSize(0);
         oneCase = generateRandomArrayOfSize(1);
         twoCase = generateRandomArrayOfSize(2);
-        fastCase = generateRandomArrayOfSize(1000);
+        fastCase = generateRandomArrayOfSize(100); // 1000
         slowCase = generateRandomArrayOfSize(100000);
     }
 
