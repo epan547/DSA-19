@@ -71,7 +71,7 @@ public class PeakFinding {
         boolean up = false;
 
 //        mid must be > 0, < length
-        while (xhigh < nums.length && xlow >= 0 && yhigh < nums.length && ylow >= 0 && xhigh > xlow && yhigh > ylow) {
+        while (xhigh < nums[0].length && xlow >= 0 && yhigh < nums[0].length && ylow >= 0 && xhigh >= xlow && yhigh >= ylow) {
             if ((peakY(xmid, ymid, nums) == 0) && (peakX(xmid, ymid, nums) == 0)) {
                 int[] ans = new int[2];
                 ans[0] = xmid;

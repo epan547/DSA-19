@@ -144,7 +144,6 @@ public class BinarySearchTreeTest {
         }
     }
 
-
     @Test
     public void testDelete() {
         delTest(bsts[0], inputs[0]);

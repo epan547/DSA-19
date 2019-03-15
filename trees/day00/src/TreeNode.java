@@ -68,4 +68,5 @@ public class TreeNode<T extends Comparable<T>> {
         String right = this.rightChild == null ? "" : ", right=" + this.rightChild.key.toString();
         return "TreeNode<T>{key=" + key + parent + left + right + '}';
     }
+
 }
