@@ -67,25 +67,14 @@ public class Skyline {
         }
         if(hi-lo == 1){
             ArrayList<Point> ans = new ArrayList<>(2);
-//            for(int i = B[lo].l; i<=B[lo].r; i++){
-                Point P = new Point(B[lo].l, B[lo].h);
-                Point R = new Point(B[lo].r, 0);
-                ans.add(P);
-                ans.add(R);
-//            }
+            Point P = new Point(B[lo].l, B[lo].h);
+            Point R = new Point(B[lo].r, 0);
+            ans.add(P);
+            ans.add(R);
             return ans;
         }
-//        if(B.length == 2){
-//            ArrayList<Point> ans = new ArrayList<>(2);
-//            Point A = new Point(B[lo].l, B[lo].h);
-//            Point C = new Point(B[lo+1].l, B[lo+1].h);
-//            ans.add(A);
-//            ans.add(C);
-//            return ans;
-//        }
 
         int i = (lo+hi) / 2;
-
 
 //      Sorted arrays
         List<Point> left = sort(B, lo, i);
@@ -98,62 +87,117 @@ public class Skyline {
 
     public static List<Point> merge(List<Point> a, List<Point> b) {
         // TODO
-        ArrayList<Point> c = new ArrayList<Point>(a.size() + b.size()); //= new Point[a.size() + b.size()]
-        int i = 0;
-        int j = 0;
-        int x = 0;
+        ArrayList<Point> c = new ArrayList<Point>(); //= new Point[a.size() + b.size()]
+        int i = 0; //counter for a
+        int j = 0; //counter for b
+
+
 
         while(i<a.size() || j<b.size()) {
-            System.out.println(x);
             if (i < a.size() && j < b.size()) {
+
+                //case 1: both points are equal, take biggest, increment both
                 if (a.get(i).x == b.get(j).x) {
-                    Point temp = new Point(x, Math.max(a.get(i).y, b.get(j).y));
-                    c.add(x, temp);
-//                    if (a.get(i).y > b.get(j).y) {
-//                        c.add(x, a.get(i));
-//                        System.out.println(a.get(i).x + "+" +a.get(i).y);
-//                    } else {
-//                        c.add(x, b.get(j));
-//                        System.out.println(b.get(j).x + "+" + b.get(j).y);
-//                    }
-                    x++;
+                    int y = Math.max(a.get(i).y, b.get(j).y);
+                    if(y == a.get(i).y){
+                        Point temp = new Point(a.get(i).x, y);
+                        c.add(temp);
+                    }
+                    else{
+                        Point temp = new Point(b.get(j).x, y);
+                        c.add(temp);
+                    }
                     i++;
                     j++;
                 }
+
+                //case 2: a is to the left, if it's greater than the previous point, add to list, increment i
+                //if it's less than the previous point, increment i
                 else if (a.get(i).x < b.get(j).x) {
-                    c.add(x, a.get(i));
-                    System.out.println(a.get(i).x + "+" +a.get(i).y );
+                    if(j > 0){
+                        if(a.get(i).y > b.get(j-1).y){
+                            Point temp = new Point(a.get(i).x, a.get(i).y);
+                            c.add(temp);
+                        }
+                        else{
+                            Point temp = new Point(a.get(i).x, b.get(j-1).y);
+                            c.add(temp);
+                        }
+                    }
+                    else{
+                        Point temp = new Point(a.get(i).x, a.get(i).y);
+                        c.add(temp);
+                    }
+
                     i++;
-                    x++;
-                } else if (a.get(i).x > b.get(j).x){
-                    c.add(x, b.get(j));
-                    System.out.println(b.get(j).x + "+" + b.get(j).y );
-                    j++;
-                    x++;
                 }
-//            if last two points have same value, remove one
+
+                //case 3: b is to the left, do the same, but increment j
+                else if (a.get(i).x > b.get(j).x){
+                    if(i > 0){
+                        if(b.get(j).y > a.get(i-1).y){
+                            Point temp = new Point(b.get(j).x, b.get(j).y);
+                            c.add(temp);
+                        }
+                        else{
+                            Point temp = new Point(b.get(j).x, a.get(i-1).y);
+                            c.add(temp);
+                        }
+                    }
+                    else{
+                        Point temp = new Point(b.get(j).x, b.get(j).y);
+                        c.add(temp);
+                    }
+                    j++;
+                }
             }
             else{
-                if(i<a.size() || j >= b.size()){
-                    c.add(x, a.get(i));
-                    System.out.println(a.get(i).x + "+" + a.get(i).y );
+                // If there are elements left in a or b, add them to c
+                if(i<a.size()){
+                    if(j > 0){
+                        if(a.get(i).y > b.get(j-1).y){
+                            Point temp = new Point(a.get(i).x, a.get(i).y);
+                            c.add(temp);
+                        }
+                        else{
+                            Point temp = new Point(a.get(i).x, b.get(j-1).y);
+                            c.add(temp);
+                        }
+                    } else{
+                        Point temp = new Point(a.get(i).x, a.get(i).y);
+                        c.add(temp);
+                    }
                     i++;
-                    x++;
                 }
-                if(j<b.size() || i>=a.size()){
-                    c.add(x, b.get(j));
-                    System.out.println(b.get(j).x + "+" + b.get(j).y );
+                if(j<b.size()){
+                    if(i > 0){
+                        if(b.get(j).y > a.get(i-1).y){
+                            Point temp = new Point(b.get(j).x, b.get(j).y);
+                            c.add(temp);
+                        }
+                        else{
+                            Point temp = new Point(b.get(j).x, a.get(i-1).y);
+                            c.add(temp);
+                        }
+                    }else{
+                        Point temp = new Point(b.get(j).x, b.get(j).y);
+                        c.add(temp);
+                    }
+
                     j++;
-                    x++;
                 }
             }
 
-//            If there are elements left in a or b, add them to c
-            if(c.size() > 2){
-                if(c.get(c.size() -1) == c.get(c.size() -2)){
-                    c.remove(a.size() + b.size() -1);
+            if(c.size() >= 2){
+                if(c.get(c.size() -1).y == c.get(c.size() -2).y){
+                    c.remove(c.size()-1);
                 }
             }
+
+            for(int n = 0; n < c.size(); n++){
+                System.out.print(c.get(n).x + "+" +c.get(n).y + ",");
+            }
+            System.out.println(" ");
         }
 
 

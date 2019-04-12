@@ -1,15 +1,41 @@
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 // use this class if you are designing your own Rubik's cube implementation
 public class RubiksCube {
+    public HashMap<String, int[]> faces;
 
     // initialize a solved rubiks cube
     public RubiksCube() {
         // TODO
+        HashMap<String, int[]> faces = new HashMap<>();
+        String[] names = new String []{"front", "back", "left", "right", "top", "bottom"};
+        for(int i=0; i< 6; i++){
+            int[] temp = new int[]{i,i,i,i};
+            faces.put(names[i], temp);
+        }
+
+        this.faces = faces;
     }
 
+    public static void printCube(HashMap<String, int[]> faces){
+        String[] names = new String []{"front", "back", "left", "right", "top", "bottom"};
+//        for(int i=0; i< 6; i++){
+//            faces.get()
+//            System.out.println();
+//        }
+        for(Map.Entry i: faces.entrySet()){
+            int[] temp = (int[]) i.getValue();
+            String s = new String();
+            for(int j:temp){
+                s = s + j + ",";
+            }
+//            StringBuilder temp = StringBuilder(i.getValue());
+            System.out.println(i.getKey() + ":" + s);
+        }
 
+    }
     // creates a copy of the rubics cube
     public RubiksCube(RubiksCube r) {
         // TODO
@@ -105,6 +131,12 @@ public class RubiksCube {
     public List<Character> solve() {
         // TODO
         return new ArrayList<>();
+    }
+
+    public static void main(String[] args){
+        RubiksCube cube = new RubiksCube();
+
+        printCube(cube.faces);
     }
 
 }

@@ -27,7 +27,7 @@ public class Solver {
             this.moves = moves;
             this.prev = prev;
             // TODO
-            cost = 0;
+            cost = moves + board.manhattan();
         }
 
         @Override
@@ -44,7 +44,11 @@ public class Solver {
      */
     private State root(State state) {
         // TODO: Your code here
-        return null;
+        if(state.prev == null){
+            return state;
+        }
+
+        return root(state.prev);
     }
 
     /*
@@ -54,6 +58,66 @@ public class Solver {
      */
     public Solver(Board initial) {
         // TODO: Your code here
+        State initState = new State(initial,0,null);
+        solutionState = new State(initial,0,null);
+        PriorityQueue<State> PQ = new PriorityQueue<>((o1, o2) -> {return o1.cost - o2.cost;});
+        PQ.add(initState);
+
+        HashMap<State, State> open = new HashMap<>();
+        HashMap<State, State> closed = new HashMap<>();
+
+        open.put(initState, initState);
+
+        if(!isSolvable()){
+            solved = false;
+            return;
+        }
+        // PQ is mechanism to find next least cost node
+        // The open set and closed set are adding a layer of complexity/checks on top of PQ to make sure you find optimal node
+        // Can be thought of as using heuristic of goal
+        // In Dijkstra, you only care about heuristic from start
+        // A* depends on the open set (set of available nodes you can still look at)
+        // closed set is the set of nodes you have fully explored
+        // for every neighbor, check if it exists in the two sets, and whether it has a smaller cost than the current existing
+        // if it has a smaller cost, put in open set. Otherwise, pass
+        // put current node into closed set at the end
+        // add to the PQ when you add to the open set
+
+
+
+        // key board, value moves in hashmap visited
+        // compare # of moves to get there with # of moves to get to the current neighbor
+        while (!open.isEmpty()){
+            State curr = PQ.poll();
+//            System.out.println(Arrays.deepToString(curr.board.tiles));
+
+            if(curr.board.isGoal()){
+//               Base case: return the path if goal is reached
+                solutionState = curr;
+                minMoves = curr.moves;
+                solved = true;
+//                System.out.println("Moves: " + minMoves);
+//                System.out.println("Boards " );
+                return;
+            }
+
+            for(Board n:curr.board.neighbors()){
+                State next = new State(n,curr.moves+1,curr);
+//                System.out.println(Arrays.deepToString(next.board.tiles));
+                if(open.containsKey(next) && curr.cost > open.get(next).cost){
+                    continue;
+                }
+                if(closed.containsKey(next) && curr.cost > closed.get(next).cost){
+                    continue;
+                }
+
+                PQ.add(next);
+                open.put(next, next);
+            }
+            closed.put(curr, curr);
+            open.remove(curr);
+        }
+
     }
 
     /*
@@ -62,7 +126,7 @@ public class Solver {
      */
     public boolean isSolvable() {
         // TODO: Your code here
-        return false;
+        return solutionState.board.solvable();
     }
 
     /*
@@ -70,7 +134,20 @@ public class Solver {
      */
     public Iterable<Board> solution() {
         // TODO: Your code here
-        return null;
+        if(solutionState != null){
+            LinkedList<Board> list = new LinkedList<>();
+            State current = root(solutionState);
+            while(current != solutionState){
+                list.add(current.board);
+//                System.out.println(Arrays.deepToString(current.board.tiles));
+            }
+            list.add(solutionState.board);
+            Iterable<Board> it = list;
+            return it;
+        }
+        else{
+            return null;
+        }
     }
 
     public State find(Iterable<State> iter, Board b) {
@@ -90,6 +167,8 @@ public class Solver {
         Board initial = new Board(initState);
 
         Solver solver = new Solver(initial);
+
+        System.out.println(solver.isSolvable());
     }
 
 

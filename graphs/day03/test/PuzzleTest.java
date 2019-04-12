@@ -131,7 +131,7 @@ public class PuzzleTest {
         Solver solver = new Solver(initial);
         assertEquals(solver.isSolvable(), true);
         // Check number of moves
-        assertEquals(solver.minMoves, 31);
+        assertEquals(solver.minMoves, 31); // 2s 84 ms with weird version
     }
 
 }
