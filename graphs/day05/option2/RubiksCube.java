@@ -7,6 +7,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RubiksCube {
 
     private BitSet cube;
+    public int minMoves = -1;
+    private State solutionState;
+    private boolean solved = false;
+    char[] options = new char[] {'u', 'U', 'r', 'R', 'f', 'F'};
 
     // initialize a solved rubiks cube
     public RubiksCube() {
@@ -99,7 +103,6 @@ public class RubiksCube {
         return rub;
     }
 
-
     // Given a character in ['u', 'U', 'r', 'R', 'f', 'F'], return a new rubik's cube with the rotation applied
     // Do not modify this rubik's cube.
     public RubiksCube rotate(char c) {
@@ -187,11 +190,146 @@ public class RubiksCube {
         return listTurns;
     }
 
+    // calculate manhattan distance
+    public int manhattan(RubiksCube r) {
+//        RubiksCube sol = new RubiksCube();
+        int mandis = 0;
+        for(int i = 0; i < 24; i++) {
+            int tar = r.getColor(i);
+            int cur = i / 4;
+            if(Math.abs(tar-cur) == 3) { mandis += 2; }
+            else if(Math.abs(tar-cur) != 0) {mandis++;}
+        }
+        return (int) (mandis / 8);
+    }
+
 
     // return the list of rotations needed to solve a rubik's cube
     public List<Character> solve() {
         // TODO
+        State initState = new State(this,0,new ArrayList<Character>(),null);
+        solutionState = new State(this,0,new ArrayList<Character>(),null);
+//        PriorityQueue<State> PQ = new PriorityQueue<State>(new Comparator<State>() {
+//            public int compare(State lhs, State rhs) {
+//                if (lhs.cost < rhs.cost) return +1;
+//                if (lhs.cost == rhs.cost) return 0;
+//                return -1;
+//            }
+//        });
+
+        PriorityQueue<State> PQ = new PriorityQueue<>();
+
+        PQ.add(initState);
+
+        HashMap<State, State> open = new HashMap<>();
+        HashMap<State, State> closed = new HashMap<>();
+
+
+
+        open.put(initState, initState);
+
+        while (!PQ.isEmpty()){
+            State curr = PQ.poll();
+
+            if(curr.cube.isSolved()){
+//               Base case: return the path if goal is reached
+                solutionState = curr;
+                minMoves = curr.moves;
+                solved = true;
+                System.out.println("you got it");
+                // want to be able to return a list of previous moves
+                return curr.rotations;
+            }
+
+//            for(RubiksCube n:curr.cube.getNeighbors()){
+//                State next = new State(n,curr.moves+1,curr.rotations.add(), curr);
+////                System.out.println(Arrays.deepToString(next.board.tiles));
+//                if(open.containsKey(next) && curr.cost > open.get(next).cost){
+//                    continue;
+//                }
+//                if(closed.containsKey(next) && curr.cost > closed.get(next).cost){
+//                    continue;
+//                }
+//
+//                PQ.add(next);
+//                open.put(next, next);
+//            }
+            RubiksCube temp = curr.cube;
+            System.out.println("starting new loop");
+
+            for(char rot: options){
+                temp.rotate(rot);
+                List<Character> rotlist = curr.rotations;
+                rotlist.add(rot);
+                State next = new State(temp,curr.moves+1,rotlist, curr);
+                //System.out.println("one possible cost is: "+ next.cost);
+                System.out.println(next.cost);
+                if(open.containsKey(next) && curr.cost > open.get(next).cost){
+                    continue;
+                }
+                if(closed.containsKey(next) && curr.cost > closed.get(next).cost){
+                    continue;
+                }
+
+                PQ.add(next);
+                open.put(next, next);
+            }
+            closed.put(curr, curr);
+            open.remove(curr);
+        }
         return new ArrayList<>();
     }
 
+    public LinkedList<RubiksCube> getNeighbors(RubiksCube r) {
+        LinkedList<RubiksCube> n = new LinkedList<>();
+        // double check that this is ok
+        RubiksCube temp = r;
+
+        for (char i : options) {
+            temp.rotate(i);
+            n.add(temp);
+            temp = r;
+        }
+        return n;
+    }
+
+    private class State implements Comparable<State>{
+        // Each state needs to keep track of its cost and the previous state
+        private RubiksCube cube;
+        private int moves; // equal to g-cost in A*
+        public int cost; // equal to f-cost in A*
+        public List<Character> rotations;
+        private State prev;
+
+        public State(RubiksCube cube, int moves, List<Character> rotations, State prev) {
+            this.cube = cube;
+            this.moves = moves;
+            this.rotations = rotations;
+            this.prev = prev;
+            // TODO
+            cost = moves + cube.manhattan(cube) ;
+        }
+
+        @Override
+        public boolean equals(Object s) {
+            if (s == this) return true;
+            if (s == null) return false;
+            if (!(s instanceof State)) return false;
+            return ((State) s).cube.equals(this.cube);
+        }
+
+        public int compareTo(State s) {
+            return this.cost - s.cost;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.cube.hashCode();
+        }
+    }
+
+    public static void main(String[] args){
+        RubiksCube cube = new RubiksCube();
+//        manhattan(cube);
+    }
 }

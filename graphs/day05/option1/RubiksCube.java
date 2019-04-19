@@ -2,9 +2,15 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static java.lang.Character.isUpperCase;
+
 // use this class if you are designing your own Rubik's cube implementation
 public class RubiksCube {
     public HashMap<String, int[]> faces;
+
+//    public RubiksCube current = new RubiksCube();
+    public List<Character> moves = new ArrayList<Character>();
+    char[] options = new char[] {'u', 'U', 'r', 'R', 'f', 'F'};
 
     // initialize a solved rubiks cube
     public RubiksCube() {
@@ -21,24 +27,22 @@ public class RubiksCube {
 
     public static void printCube(HashMap<String, int[]> faces){
         String[] names = new String []{"front", "back", "left", "right", "top", "bottom"};
-//        for(int i=0; i< 6; i++){
-//            faces.get()
-//            System.out.println();
-//        }
+
         for(Map.Entry i: faces.entrySet()){
             int[] temp = (int[]) i.getValue();
             String s = new String();
             for(int j:temp){
                 s = s + j + ",";
             }
-//            StringBuilder temp = StringBuilder(i.getValue());
             System.out.println(i.getKey() + ":" + s);
         }
 
     }
-    // creates a copy of the rubics cube
+    // creates a copy of the rubiks cube
     public RubiksCube(RubiksCube r) {
         // TODO
+        this.faces = r.faces;
+        this.moves = r.moves;
     }
 
     // return true if this rubik's cube is equal to the other rubik's cube
@@ -47,8 +51,15 @@ public class RubiksCube {
         if (!(obj instanceof RubiksCube))
             return false;
         RubiksCube other = (RubiksCube) obj;
+
         // TODO
-        return false;
+        for(Map.Entry i: this.faces.entrySet()){
+           if(!i.getValue().equals(other.faces.get(i.getKey()))){
+               System.out.println("False");
+               return false;
+           }
+        }
+        return true;
     }
 
     /**
@@ -63,12 +74,20 @@ public class RubiksCube {
     @Override
     public int hashCode() {
         // TODO
-        return 0;
+        return faces.hashCode();
     }
 
     public boolean isSolved() {
         // TODO
-        return false;
+        for(HashMap.Entry i: this.faces.entrySet()){
+            int n = ((int[])i.getValue())[0];
+            for(int x:(int[])i.getValue()){
+                if(x != n){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 
@@ -86,6 +105,7 @@ public class RubiksCube {
     // Do not modify this rubik's cube.
     public RubiksCube rotate(char c) {
         // TODO
+
         return this;
     }
 
@@ -126,11 +146,82 @@ public class RubiksCube {
         return listTurns;
     }
 
+    public void rotate_side(RubiksCube r, char side){
+        int[] temp = new int[4];
+        String face = "";
+        if(side == 'u' || side == 'U'){
+            face = "top";
+            temp = r.faces.get("top");
+        } else if (side == 'r' || side == 'R') {
+            face = "right";
+            temp = r.faces.get("right");
+        } else if (side == 'f' || side == 'F'){
+            face = "front";
+            temp = r.faces.get("front");
+        }
+
+        if(isUpperCase(side)){
+            r.faces.put(face, rotate_left(temp));
+        }
+        else{
+            r.faces.put(face, rotate_right(temp));
+        }
+    }
+
+    public int[] rotate_right(int[] face){
+        int[] new_face = new int[4];
+        new_face[0] = face[2];
+        new_face[1] = face[0];
+        new_face[2] = face[3];
+        new_face[3] = face[1];
+        return new_face;
+    }
+
+    public int[] rotate_left(int[] face){
+        int[] new_face = new int[4];
+        new_face[0] = face[1];
+        new_face[1] = face[3];
+        new_face[2] = face[0];
+        new_face[3] = face[2];
+        return new_face;
+    }
 
     // return the list of rotations needed to solve a rubik's cube
     public List<Character> solve() {
         // TODO
-        return new ArrayList<>();
+        if(this.isSolved()){
+            return this.moves;
+        }
+
+        Queue<RubiksCube> queue = new LinkedList<>();
+        queue.add(this);
+
+        while(!queue.isEmpty()){
+            RubiksCube curr = queue.remove();
+
+            // base case
+            if(curr.isSolved()){
+                return curr.moves;
+            }
+
+           queue.addAll(this.getNeighbors(this));
+        }
+
+        return null;
+    }
+
+    public LinkedList<RubiksCube> getNeighbors(RubiksCube r){
+        LinkedList<RubiksCube> n = new LinkedList<>();
+        // double check that this is ok
+        RubiksCube temp = r;
+
+        for(char i: options){
+            temp.rotate(i);
+            n.add(temp);
+            temp = r;
+        }
+        return n;
+
     }
 
     public static void main(String[] args){
